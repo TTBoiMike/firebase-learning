@@ -1,16 +1,16 @@
 const list = document.querySelector('ul')
 const form = document.querySelector('form')
 
-let createUserHTML = (user) => {
-    // let time = user.created_at.toDate()
+let createUserHTML = (user, id) => {
     let html = `
-        <li>
+        <li data-id=${id}>
             <div>
                 ${user.username}
             </div>    
             <div>
                 ${user.age}
             </div>
+            <button class="btn btn-danger btn-sm my-2">Delete</button>
         </li>
     `
     list.innerHTML += html
@@ -20,7 +20,7 @@ let createUserHTML = (user) => {
 db.collection('users').get().then((snapshot) => {
     snapshot.docs.forEach(doc => {
         console.log(doc.data())
-        createUserHTML(doc.data())
+        createUserHTML(doc.data(), doc.id)
     })
 }).catch(err => {
     console.log(err)
@@ -41,4 +41,15 @@ form.addEventListener(('submit'), (e) => {
     }).catch(err => {
         console.log(err)
     })
+})
+
+// delete document from collection
+list.addEventListener('click' , (e) =>{
+    if(e.target.tagName == "BUTTON") {
+        const id = e.target.parentElement.getAttribute('data-id')
+        // deletr document by id (returns promise)
+        db.collection('users').doc(id).delete().then(() => {
+            console.log("recipe deleted")
+        })
+    }
 })
